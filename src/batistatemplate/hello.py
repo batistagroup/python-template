@@ -18,7 +18,7 @@ from batistatemplate.utils.logging_config import logger
 
 
 class UnitSystem(Enum):
-    """Enumeration of supported unit systems."""
+    """Supported unit systems."""
 
     ATOMIC = auto()  # Atomic units (Bohr, Hartree)
     STANDARD = auto()  # Standard units (Angstrom, eV)
@@ -27,7 +27,7 @@ class UnitSystem(Enum):
 
 @dataclass(frozen=True)
 class Atom:
-    """Immutable dataclass representing an atom."""
+    """Represents an atom."""
 
     symbol: AtomicSymbol
     position: FloatVector
@@ -36,7 +36,18 @@ class Atom:
 
     @classmethod
     def from_symbol(cls, symbol: AtomicSymbol, position: FloatVector, /) -> "Atom":
-        """Create an Atom instance from a symbol and position."""
+        """Creates an Atom instance from a chemical symbol and position.
+
+        Args:
+            symbol: The chemical symbol of the atom (e.g., "H", "He").
+            position: The 3D coordinates of the atom as a FloatVector.
+
+        Returns:
+            An Atom instance.
+
+        Raises:
+            ValueError: If the chemical symbol is unknown.
+        """
         atomic_data = {
             "H": (1, 1.008),
             "He": (2, 4.003),
@@ -62,7 +73,11 @@ T = TypeVar("T")
 
 @dataclass
 class Result(Generic[T]):
-    """Generic result container with optional error handling."""
+    """A generic container for function results, including error handling.
+
+    Type parameter ``T`` represents the type of the ``value`` attribute,
+    i.e., the type of the successful result.
+    """
 
     value: T
     success: bool = True
@@ -70,38 +85,69 @@ class Result(Generic[T]):
 
 
 class Molecule:
-    """Class representing a molecular system."""
+    """Represents a molecular system."""
 
     def __init__(self, atoms: Sequence[Atom], unit_system: UnitSystem = UnitSystem.ATOMIC) -> None:
+        """Initializes a Molecule instance.
+
+        Args:
+            atoms: A sequence of Atom objects representing the atoms in the molecule.
+            unit_system: The unit system to use for the molecule (default: UnitSystem.ATOMIC).
+        """
         self.atoms = tuple(atoms)  # Make immutable
         self.unit_system = unit_system
         logger.info(f"Created molecule with {len(atoms)} atoms using {unit_system.name} unit system")
 
     @property
     def coordinates(self) -> AtomicCoordinates:
-        """Get atomic coordinates as numpy array."""
+        """Atomic coordinates as a numpy array.
+
+        Returns:
+            A numpy array of shape (n_atoms, 3) containing the atomic coordinates.
+        """
         return np.array([atom.position for atom in self.atoms])
 
     @property
     def atomic_numbers(self) -> AtomicNumbers:
-        """Get atomic numbers as numpy array."""
+        """Atomic numbers as a numpy array.
+
+        Returns:
+            A numpy array of shape (n_atoms,) containing the atomic numbers.
+        """
         return np.array([atom.atomic_number for atom in self.atoms], dtype=np.int32)
 
     @property
     def center_of_mass(self) -> FloatVector:
-        """Calculate center of mass of the molecule."""
+        """Calculates the center of mass of the molecule.
+
+        Returns:
+            A FloatVector representing the center of mass coordinates.
+        """
         masses = np.array([atom.mass for atom in self.atoms])
         weighted_coords = self.coordinates * masses[:, np.newaxis]
         return cast(FloatVector, np.sum(weighted_coords, axis=0) / np.sum(masses))
 
     def calculate_distance_matrix(self) -> Float2D:
-        """Calculate matrix of interatomic distances."""
+        """Calculates the matrix of interatomic distances.
+
+        Returns:
+            A Float2D numpy array of shape (n_atoms, n_atoms) where each element (i, j)
+            is the distance between atom i and atom j.
+        """
         coords = self.coordinates
         diff = coords[:, np.newaxis, :] - coords[np.newaxis, :, :]
         return cast(Float2D, np.sqrt(np.sum(diff * diff, axis=-1)))
 
     def nuclear_repulsion(self) -> Result[Energy]:
-        """Calculate nuclear repulsion energy with error handling."""
+        """Calculates the nuclear repulsion energy.
+
+        This method calculates the Coulomb repulsion energy between all pairs of atomic nuclei in the molecule.
+        It includes error handling and returns a Result object.
+
+        Returns:
+            A Result object containing the nuclear repulsion energy (in atomic units)
+            if successful, or an error message if the calculation fails.
+        """
         try:
             distance_matrix = self.calculate_distance_matrix()
             atomic_numbers = self.atomic_numbers
@@ -123,7 +169,18 @@ class Molecule:
 
 
 def apply_to_coordinates(func: Callable[[AtomicCoordinates], AtomicCoordinates], molecule: Molecule, /) -> Molecule:
-    """Higher-order function to transform molecular coordinates."""
+    """Applies a coordinate transformation function to a molecule.
+
+    This is a higher-order function that takes a function which transforms atomic coordinates
+    and applies it to the coordinates of the given molecule.
+
+    Args:
+        func: A callable that takes AtomicCoordinates and returns transformed AtomicCoordinates.
+        molecule: The Molecule object to be transformed.
+
+    Returns:
+        A new Molecule object with transformed coordinates.
+    """
     new_coords = func(molecule.coordinates)
     new_atoms = [
         Atom(a.symbol, np.array(pos, dtype=np.float64), a.atomic_number, a.mass)
@@ -138,14 +195,14 @@ def translate_molecule(
     *,
     vector: FloatVector,
 ) -> Molecule:
-    """Translate molecule by a vector.
+    """Translates a molecule by a given vector.
 
     Args:
-        molecule: The molecule to translate
-        vector: Translation vector (x, y, z)
+        molecule: The molecule to translate.
+        vector: The translation vector (x, y, z).
 
     Returns:
-        New molecule with translated coordinates
+        A new Molecule object that is translated by the given vector.
     """
     logger.debug(f"Translating molecule by vector {vector}")
     return apply_to_coordinates(lambda coords: coords + vector, molecule)
@@ -158,15 +215,15 @@ def rotate_molecule(
     angle: float,
     axis: FloatVector | None = None,
 ) -> Molecule:
-    """Rotate molecule around an axis by given angle.
+    """Rotates a molecule around an axis by a given angle.
 
     Args:
-        molecule: The molecule to rotate
-        angle: Rotation angle in radians (positive = counterclockwise)
-        axis: Rotation axis vector (default: [0, 0, 1], i.e., z-axis)
+        molecule: The molecule to rotate.
+        angle: The rotation angle in radians (positive for counterclockwise rotation).
+        axis: The rotation axis vector. Defaults to the z-axis ([0, 0, 1]).
 
     Returns:
-        Rotated molecule
+        A new Molecule object that is rotated by the given angle around the given axis.
     """
     if axis is None:
         axis = np.array([0, 0, 1])
@@ -174,7 +231,15 @@ def rotate_molecule(
     logger.debug(f"Rotating molecule by {angle:.2f} radians around axis {axis}")
 
     def rotation_matrix(theta: float, axis_vec: FloatVector) -> Float2D:
-        """Generate 3D rotation matrix using Rodrigues' rotation formula."""
+        """Generates a 3D rotation matrix using Rodrigues' rotation formula.
+
+        Args:
+            theta: The rotation angle in radians (positive for counterclockwise).
+            axis_vec: The rotation axis vector.
+
+        Returns:
+            A 3x3 Float2D numpy array representing the rotation matrix.
+        """
         # Normalize the axis vector
         axis_vec = axis_vec / np.linalg.norm(axis_vec)
 

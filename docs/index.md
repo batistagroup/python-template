@@ -98,6 +98,34 @@ uv sync
 
 This ensures your virtual environment exactly matches the dependencies specified in the lock file, removing any packages you don't need and installing any that are missing.
 
+### Writing Documentation
+
+This project follows a structured approach to documentation. Each module should have its own markdown file in the `docs/batistatemplate/` directory. Documentation files might include:
+
+1. **Overview**: A brief description of the module's purpose and key features
+2. **Concepts**: Explanation of important concepts and design decisions
+3. **Examples**: Code examples showing common usage patterns
+4. **Source Code**: Auto-generated documentation from source code annotations
+
+#### Source Code Documentation
+
+Each documentation file should end with a Source Code section that imports and displays the module's classes and functions. Use the following structure:
+
+```markdown
+## Source Code
+
+::: batistatemplate.module_name
+    handler: python
+    options:
+      show_root_heading: true
+      show_source: true
+      members:
+        - ClassName1
+        - ClassName2
+        - function_name1
+        - function_name2
+```
+
 ## Getting Started
 
 For more detailed information about specific components and usage examples, please navigate through the documentation using the navigation menu.
