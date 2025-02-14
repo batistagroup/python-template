@@ -5,21 +5,19 @@ This guide covers principles and practices for testing scientific code, with a f
 ## Why Test Scientific Code?
 
 1. **Correctness Verification**
-
-   - Scientific code often implements complex mathematical formulas
-   - Small errors can propagate and lead to incorrect results
-   - Tests help verify mathematical and physical principles
+    - Scientific code often implements complex mathematical formulas
+    - Small errors can propagate and lead to incorrect results
+    - Tests help verify mathematical and physical principles
 
 2. **Reproducibility**
-
-   - Tests document expected behavior
-   - Help ensure consistent results across different environments
-   - Critical for scientific reproducibility
+    - Tests document expected behavior
+    - Help ensure consistent results across different environments
+    - Critical for scientific reproducibility
 
 3. **Code Evolution**
-   - Safe refactoring of performance-critical code
-   - Confidence when updating dependencies
-   - Protection against regression
+    - Safe refactoring of performance-critical code
+    - Confidence when updating dependencies
+    - Protection against regression
 
 ## What to Test
 
@@ -168,27 +166,24 @@ def test_rotation_special_angles(angle):
 ## Best Practices
 
 1. **Test Organization**
-
-   - Group related tests in classes
-   - Use fixtures for common setups
-   - Separate unit and integration tests
+    - Group related tests in classes
+    - Use fixtures for common setups
+    - Separate unit and integration tests
 
 2. **Performance Considerations**
-
-   - Keep unit tests fast
-   - Use smaller datasets for tests
-   - Mark slow tests appropriately
+    - Keep unit tests fast
+    - Use smaller datasets for tests
+    - Mark slow tests appropriately
 
 3. **Documentation**
-
-   - Document test assumptions
-   - Explain physical/mathematical meaning
-   - Reference equations or papers
+    - Document test assumptions
+    - Explain physical/mathematical meaning
+    - Reference equations or papers
 
 4. **Continuous Integration**
-   - Run tests on multiple platforms
-   - Test with different dependency versions
-   - Include performance benchmarks
+    - Run tests on multiple platforms
+    - Test with different dependency versions
+    - Include performance benchmarks
 
 ## Common Pitfalls
 
@@ -231,21 +226,19 @@ def test_rotation_special_angles(angle):
 While testing is crucial, some cases might not require tests:
 
 1. **Visualization Code**
-
-   - Plot formatting
-   - Color schemes
-   - Interactive features
+    - Plot formatting
+    - Color schemes
+    - Interactive features
 
 2. **Configuration**
-
-   - Static configuration files
-   - Environment settings
-   - Documentation
+    - Static configuration files
+    - Environment settings
+    - Documentation
 
 3. **Prototype Code**
-   - Exploratory analysis
-   - One-off scripts
-   - Temporary debugging code
+    - Exploratory analysis
+    - One-off scripts
+    - Temporary debugging code
 
 ## Conclusion
 

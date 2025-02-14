@@ -13,7 +13,6 @@ type ComplexVector = NDArray[np.complex128]  # Shape: (n,)
 type Float2D = NDArray[np.float64]  # Shape: (n, m)
 type Complex2D = NDArray[np.complex128]  # Shape: (n, m)
 
-# Molecular structure types (keeping these as they're fundamental)
 type AtomicCoordinates = NDArray[np.float64]  # Shape: (n_atoms, 3)
 type AtomicNumbers = NDArray[np.int32]  # Shape: (n_atoms,)
 
