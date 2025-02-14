@@ -13,6 +13,8 @@ source .venv/bin/activate
 
 # Install the package and all development dependencies
 uv pip install -e ".[dev]"
+# Initiate pre-commit checks
+pre-commit install
 ```
 
 This will install all necessary dependencies, including development tools like pre-commit hooks, testing frameworks, and documentation generators.
