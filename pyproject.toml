@@ -1,0 +1,80 @@
+[project]
+name = "batistatemplate"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.2.3",
+    "tomli>=2.2.1",
+    "tqdm>=4.67.1",
+]
+authors = [{ name = "Anton Morgunov", email = "anton@ischemist.com" }]
+license = { text = "MIT" }
+
+[project.urls]
+Homepage = "https://github.com/batistagroup/batistatemplate"
+Issues = "https://github.com/batistagroup/batistatemplate/issues"
+
+
+[tool.setuptools]
+packages = ["batistatemplate"]
+package-dir = { "" = "src" }
+
+
+[project.optional-dependencies]
+dev = [
+    "ipykernel>=6.29.5",
+    "rich>=13.9.4",
+    "pre-commit>=4.1.0",
+    "ruff>=0.9.6",
+    "pytest>=8.3.4",
+    "mypy>=1.15.0",
+    "mkdocs>=1.6.1",
+    "mkdocstrings-python>=1.15.0",
+    "mkdocs-material>=9.6.4",
+    "types-tqdm>=4.67.0.20241221",
+]
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+exclude = ["tests"]
+disable_error_code = ["unused-ignore"]
+
+[[tool.mypy.overrides]]
+# RDKit is not typed, so we ignore all errors in it
+module = ["rdkit-stubs.*", "rdkit.*"]
+ignore_errors = true
+
+[tool.ruff]
+line-length = 120
+lint.select = [
+    "E",   # pycodestyle
+    "F",   # Pyflakes
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "I",   # isort
+]
+
+
+# Section below is pretty standard logger configuration
+
+[tool.logging]
+version = 1
+disable_existing_loggers = false
+
+[tool.logging.formatters.standard]
+format = "%(asctime)s [%(levelname)s] %(name)s (%(module)s:%(lineno)d): %(message)s"
+datefmt = "%Y-%m-%d %H:%M:%S"
+
+[tool.logging.handlers.console]
+class = "logging.StreamHandler"
+formatter = "standard"
+stream = "ext://sys.stdout"
+
+[tool.logging.loggers.batistatemplate]
+handlers = ["console"]
+propagate = false
+level = "INFO"
