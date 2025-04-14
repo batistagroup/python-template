@@ -16,9 +16,9 @@ repos:
         language: python
         types: [python]
 
-      # - id: mypy
-      #   name: mypy
-      #   entry: mypy
-      #   language: system
-      #   types: [python]
-      #   args: [--strict, --ignore-missing-imports, --exclude=tests]
+      - id: mypy
+        name: mypy
+        entry: mypy
+        language: system
+        types: [python]
+        args: [--strict, --ignore-missing-imports, --exclude=tests]
